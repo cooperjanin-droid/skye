@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Dashboard — Skye",
@@ -63,12 +64,22 @@ const recentActivity = [
   { label: "Account created", time: "Today", done: true },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.email?.split("@")[0] ||
+    "Pilot";
+
   return (
     <div className="p-8">
       {/* Welcome */}
       <div className="mb-8">
-        <h1 className="font-heading text-3xl font-bold text-white mb-1">Welcome back, Pilot</h1>
+        <h1 className="font-heading text-3xl font-bold text-white mb-1">
+          Welcome back, {displayName}
+        </h1>
         <p className="text-[#A0AEC0]">Here&apos;s where you left off.</p>
       </div>
 

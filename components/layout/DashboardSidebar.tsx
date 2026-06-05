@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Puzzle,
@@ -12,8 +12,10 @@ import {
   Library,
   Users,
   Settings,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -29,6 +31,14 @@ const navItems = [
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <aside className="w-64 min-h-screen bg-[#111827] border-r border-[#1F2937] flex flex-col">
@@ -68,7 +78,7 @@ export function DashboardSidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div className="p-4 border-t border-[#1F2937]">
+      <div className="p-4 border-t border-[#1F2937] space-y-3">
         <div className="bg-gradient-to-r from-[#3B7BF6]/10 to-[#00D4FF]/10 border border-[#3B7BF6]/20 rounded-lg p-4">
           <p className="text-xs text-[#A0AEC0] mb-2">Plugin Status</p>
           <div className="flex items-center gap-2">
@@ -76,6 +86,14 @@ export function DashboardSidebar() {
             <span className="text-sm text-white font-medium">Active</span>
           </div>
         </div>
+
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#A0AEC0] hover:text-red-400 hover:bg-red-900/10 transition-all duration-150"
+        >
+          <LogOut size={18} aria-hidden="true" />
+          Sign Out
+        </button>
       </div>
     </aside>
   );
